@@ -1,3 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Now Playing</title>
+<style>
+  :root {
+    color-scheme: dark;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: 'Courier New', monospace;
+    background: #101014;
+    color: #eee;
+  }
+  header {
+    position: sticky;
+    top: 0;
+    background: #16161c;
+    border-bottom: 1px solid #2a2a33;
+    padding: 14px 20px;
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+    gap: 12px;
+    z-index: 10;
+  }
+  h1 {
+    font-size: 1.2rem;
+    margin: 0;
+    letter-spacing: 0.02em;
+    text-align: center;
+  }
+  h1.waiting {
+    color: #777;
+    font-style: italic;
+  }
+  #startBtn {
+    background: #2f6feb;
+    color: white;
+    border: none;
+    padding: 10px 18px;
+    font-size: 1rem;
+    border-radius: 8px;
+    cursor: pointer;
+  }
+  #startBtn.playing {
+    background: #444;
+  }
+  #startBtn:disabled {
+    background: #2a2a33;
+    color: #666;
+    cursor: not-allowed;
+  }
+  #refreshBtn {
+    background: #2a2a33;
+    color: #eee;
+    border: 1px solid #3a3a44;
+    padding: 10px 16px;
+    font-size: 1rem;
+    border-radius: 8px;
+    cursor: pointer;
+  }
+  main {
+    padding: 24px 20px 60vh;
+    white-space: pre-wrap;
+    font-size: 1.15rem;
+    line-height: 1.9;
+  }
+  main.waiting {
+    color: #666;
+    font-style: italic;
+    font-size: 1.1rem;
+  }
+  .chord {
+    color: #6fbfff;
+    font-weight: bold;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <button id="refreshBtn" title="Check for the latest uploaded song">⟳ Refresh</button>
+  <h1 id="songTitle" class="waiting">Waiting for song…</h1>
+  <button id="startBtn" disabled>Play</button>
+</header>
+
+<main id="songContent" class="waiting">
+No song has been uploaded yet. Once song.html is added to this
+site, it'll show up here automatically — hit Refresh to check.
+</main>
+
 <script>
   const titleEl = document.getElementById('songTitle');
   const contentEl = document.getElementById('songContent');
@@ -27,10 +122,8 @@
 
   async function loadSong() {
     try {
-      // ✅ Bypasses the GitHub Pages build delay completely!
-      const rawUrl = 'https://raw.githubusercontent.com/StudioChords/Songs/main/song.html?t=' + Date.now();
-      
-      const res = await fetch(rawUrl, { cache: 'no-store' });
+      // Cache-bust so we always get the freshest upload, not a stale cached copy.
+      const res = await fetch('song.html?t=' + Date.now(), { cache: 'no-store' });
       if (!res.ok) {
         showWaiting();
         return;
@@ -100,3 +193,6 @@
 
   loadSong();
 </script>
+
+</body>
+</html>
